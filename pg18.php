@@ -1,125 +1,144 @@
-<?php
-$server = "localhost";
-$user = "root";
-$pass = "";
-$dbname = "exam";
-$conn = mysqli_connect($server, $user, $pass, $dbname);
-if (!$conn) {
-    die("Database Connection Failed: " . $conn->connect_error);
-}
-$message = "";
-// INSERT BOOK RECORD
-if (isset($_POST['submit'])) {
-    $bookno = $_POST['bookno'];
-    $name = $_POST['name'];
-    $author = $_POST['author'];
-    $edition = $_POST['edition'];
-    $publisher = $_POST['publisher'];
-   if (!empty($bookno) && !empty($name) && !empty($author) && !empty($edition) && !empty($publisher)) {
-        $sql = "INSERT INTO book (bookno, name, author, edition, publisher) 
-                VALUES ('$bookno', '$name', '$author', '$edition', '$publisher')";
-      if (mysqli_query($conn, $sql)) {
-           $message = "
-    <div class='alert alert-success text-center'>
-        <strong>Book added successfully!</strong><br>
-        <b>Book No:</b> $bookno <br>
-        <b>Title:</b> $name <br>
-        <b>Author:</b> $author <br>
-        <b>Edition:</b> $edition <br>
-        <b>Publisher:</b> $publisher
-    </div>";
-        } else {
-            $message = "<div class='alert alert-danger text-center'>Error: Book No already exists or invalid data.</div>";
-        }
-    } else {
-        $message = "<div class='alert alert-danger text-center'>All fields are required.</div>";
-    }
-}
-// SEARCH BY AUTHOR
-if (isset($_POST['search'])) {
-    $searchno = $_POST['bookno'];
-     $sqls="SELECT * FROM book WHERE bookno='$searchno'";
-    $result = mysqli_query($conn, $sqls);
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Book Information</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<title>Book Database</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f7fa;
+        margin: 0;
+        padding: 20px;
+    }
+    h2 {
+        text-align: center;
+        color: #333;
+    }
+    .container {
+        width: 50%;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    label {
+        font-weight: bold;
+    }
+    input[type="text"],
+    input[type="number"] {
+        width: 95%;
+        padding: 10px;
+        margin: 8px 0 15px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    input[type="submit"] {
+        background: #007bff;
+        border: none;
+        padding: 10px 20px;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+        background: #0056b3;
+    }
+    table {
+        width: 80%;
+        margin: auto;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    table, th, td {
+        border: 1px solid #ccc;
+        padding: 12px;
+        text-align: center;
+    }
+
+    th {
+        background: #007bff;
+        color: white;
+    }
+</style>
 </head>
 <body>
-<div class="container mt-4">
-    <h2 class="text-center">Book Entry Form</h2>
-    <?php echo $message; ?>
-    <form method="POST" action="<?php echo $_SERVER['PHP_SELF'];  ?>" class="border p-4 bg-light">
-        <div class="mb-3">
-            <label class="form-label">Book No</label>
-            <input type="number" name="bookno" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Book Title</label>
-            <input type="text" name="name" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Author</label>
-            <input type="text" name="author" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Edition</label>
-            <input type="text" name="edition" class="form-control">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Publisher</label>
-            <input type="text" name="publisher" class="form-control">
-        </div>
-        <button type="submit" name="submit" class="btn btn-primary w-100">Add Book</button>
-    </form>
-    <hr class="my-4">
-    <h2 class="text-center">Search Books by Book No</h2>
-    <form method="POST"   action="<?php echo $_SERVER['PHP_SELF'];  ?>" class="border p-4 bg-light mb-4">
-        <div class="mb-3">
-            <label class="form-label">Author Name</label>
-            <input type="text" name="bookno" class="form-control">
-        </div>
-        <button type="submit" name="search" class="btn btn-success w-100">Search</button>
-    </form>
-    <!-- DISPLAY SEARCH RESULTS -->
-    <?php
-    if (isset($_POST['search'])) {
-        echo "<h4>Search Results:</h4>";
-        if (mysqli_num_rows($result) > 0) {
-            echo "<table class='table table-bordered table-striped text-center'>
-                    <thead class='table-dark'>
-                        <tr>
-                            <th>Book No</th>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Edition</th>
-                            <th>Publisher</th>
-                        </tr>
-                    </thead>
-                    <tbody>";
-
-            while ($row = mysqli_fetch_assoc($result)) {
-                echo "<tr>
-                        <td>{$row['bookno']}</td>
-                        <td>{$row['name']}</td>
-                        <td>{$row['author']}</td>
-                        <td>{$row['edition']}</td>
-                        <td>{$row['publisher']}</td>
-                      </tr>";
-            }
-            echo "</tbody></table>";
-        } else {
-            echo "<div class='alert alert-warning'>No books found for this author.</div>";
-        }
-    }
-   ?>
+<h2>Add Book Details</h2>
+<div class="container">
+<form action="program18.php" method="post">
+    <label>Book ID:</label>
+    <input type="text" name="id" required="">
+    <label>Title:</label>
+    <input type="text" name="name"required="">
+    <label>Authors:</label>
+    <input type="text" name="auth"required="">
+    <label>Edition:</label>
+    <input type="number" name="edition"required="">
+    <label>Publisher:</label>
+    <input type="text" name="publisher"required="">
+    <input type="submit" name="submit" value="Submit">
+</form>
 </div>
+<h2>Search Book</h2>
+<div class="container">
+<form action="program18.php" method="post">
+    <label>Book ID:</label>
+    <input type="text" name="bookid"required="">
+    <input type="submit" name="search" value="Search">
+</form>
+</div>
+<?php
+$conn = mysqli_connect('localhost','root','', 'college');
+if (!$conn) {
+  die("Connection failed: " . mysqli_connect_error());
+}
+if (isset($_POST['submit']))
+{
+	$id=$_POST['id'];
+	$name=$_POST['name'];
+	$auth=$_POST['auth'];
+	$edition=$_POST['edition'];
+	$publisher=$_POST['publisher'];
+
+$sql = "INSERT INTO books VALUES ('$id', '$name', '$auth', '$edition', '$publisher')";
+mysqli_query($conn, $sql);
+}
+if (isset($_POST['search']))
+{
+    $id=$_POST['bookid'];
+$sql = "SELECT * FROM books where book_id='$id'";
+$result = mysqli_query($conn, $sql);
+if (mysqli_num_rows($result) > 0) {
+    ?>
+    <table class="table" border='1'>
+    <tr>
+    <th>Book ID</th>
+    <th>Title</th>
+    <th>Authors</th>
+    <th>Edition</th>
+    <th>Publisher</th>
+    </tr>
+  <?php
+  while(  $row = mysqli_fetch_assoc($result)) 
+  {?>
+    <tr>
+        <td><?php echo $row['book_id']; ?></td>
+        <td><?php echo $row['book_title']; ?></td>
+        <td><?php echo $row['book_author']; ?></td>
+        <td><?php echo $row['book_edition']; ?></td>
+        <td><?php echo $row['publisher']; ?></td>
+    </tr>
+    <?php
+  }
+} 
+else 
+{
+  echo "No records found";
+}
+}
+?>
 </body>
 </html>
-<?php
-$conn->close();
-?>
