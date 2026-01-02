@@ -1,12 +1,13 @@
 <?php
-$students = ["John", "Alice", "Bob", "Diana", "Charlie"];
-echo "Original Array:\n";
-print_r($students);
-echo "\n";
-asort($students);
-echo "\nArray Sorted in Ascending Order (asort):\n";
-print_r($students);
-arsort($students);
-echo "\nArray Sorted in Descending Order (arsort):\n";
-print_r($students);
+$names = array("Alex","Danny","John","George","Mike");
+echo "Original Array: <br>";
+print_r($names);
+echo "<br><br>";
+asort($names);
+echo "Sorted Array: <br>";
+print_r($names);
+echo "<br><br>";
+arsort($names);
+echo "Reverse Sorted Array: <br>";
+print_r($names);
 ?>
